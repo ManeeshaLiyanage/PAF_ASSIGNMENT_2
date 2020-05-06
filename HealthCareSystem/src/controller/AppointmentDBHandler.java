@@ -58,10 +58,12 @@ public class AppointmentDBHandler {
 			preparedStmt.execute();
 			con.close();
 
-			output = "Inserted Successfully";
+			// output = "Inserted Successfully";
+			String newAppointments = readAppointment();
+			output = "{\"stat\":\"success\", \"data\": \"" + newAppointments + "\"}";
 
 		} catch (Exception e) {
-			output = "Error while inserting";
+			output = "{\"stat\":\"error\", \"data\":         " + "\"Error while inserting the Appointment.\"}";
 			System.err.println(e.getMessage());
 		}
 
@@ -112,8 +114,8 @@ public class AppointmentDBHandler {
 			}
 
 			// Prepare the html table to be displayed
-			output = "<table border=\"1\"><tr><th>appointment_Code</th><th>patient_id</th><th>visit_ID</th>"
-					+ "<th>status</th></tr>";
+			output = "<table border='1'><tr><th>appointment Code</th><th>patient id</th><th>visit ID</th>"
+					+ "<th>status</th>" + "<th>Update</th><th>Remove</th></tr>";
 
 			String query = "select * from appointment";
 			Statement stmt = con.createStatement();
@@ -133,18 +135,20 @@ public class AppointmentDBHandler {
 				 */
 
 				// Add into the html table
-				output += "<tr><td>" + appointment_Code + "</td>";
+				output += "<tr><td><input id='hidAppointIDUpdate' name= 'hidAppointIDUpdate' type= 'hidden' value='"
+						+ appointment_ID + "'>" + appointment_Code + "</td>";
+				output += "<td>" + appointment_Code + "</td>";
 				output += "<td>" + patient_id + "</td>";
 				output += "<td>" + visit_ID + "</td>";
 				output += "<td>" + status + "</td>";
 
 				// buttons
-				output += "<td><input name=\"btnUpdate\" type=\"button\" "
-						+ "value=\"Update\" class=\"btn btn-secondary\"></td>"
-						+ "<td><form method=\"post\" action=\"appointments.jsp\">"
-						+ "<input name=\"btnRemove\" type=\"submit\" value=\"Remove\"      "
-						+ "class=\"btn btn-danger\">" + "<input name=\"appointment_ID\" type=\"hidden\" value=\""
-						+ appointment_ID + "\">" + "</form></td></tr>";
+				output += "<td><input name= 'btnUpdate' type= 'button' "
+						+ "value= 'Update' class= 'btnUpdate btn btn-secondary'></td>"
+						/* + "<td><form method=\"post\" action=\"appointment.jsp\">" */
+						+ "<td><input name= 'btnRemove' type= 'button' value='Remove'"
+						+ "class= 'btnRemove btn btn-danger' data-appointment_ID = '" + appointment_ID + "'>"
+						+ "</td></tr>";
 			}
 
 			con.close();
@@ -185,17 +189,16 @@ public class AppointmentDBHandler {
 			preparedStatement.setString(3, appo.getVisit_ID());
 			preparedStatement.setString(4, appo.getStatus());
 			preparedStatement.setInt(5, appo.getAppointment_ID());
-		
-			
 
 			// execution
 			preparedStatement.execute();
 			con.close();
 
-			output = "Updated Successfully";
+			String newAppointments = readAppointment();
+			output = "{\"stat\":\"success\", \"data\": \"" + newAppointments + "\"}";
 
 		} catch (Exception e) {
-			output = "Error while updating";
+			output = "{\"stat\":\"error\", \"data\":  " + "\"Error while updating the Appointment.\"}";
 			System.err.println(e.getMessage());
 			;
 		}
@@ -212,20 +215,26 @@ public class AppointmentDBHandler {
 			}
 			// create a prepared statement
 			String query = "delete from appointment where appointment_ID=?";
+
 			PreparedStatement preparedStmt = con.prepareStatement(query);
+
 			// binding values
 			preparedStmt.setInt(1, Integer.parseInt(ID));
+
 			// execute the statement
 			preparedStmt.execute();
 			con.close();
-			output = "Deleted successfully";
+
+			String newAppointments = readAppointment();
+			output = "{\"status\":\"success\", \"data\": \"" + newAppointments + "\"}";
+
 		} catch (Exception e) {
 			output = "Error while deleting the Appointment.";
-			System.err.println(e.getMessage()+e);
+			System.err.println(e.getMessage() + e);
 		}
 		return output;
 	}
-	
+
 	public int getAppointmentID() {
 		int id = 0;
 
@@ -240,16 +249,13 @@ public class AppointmentDBHandler {
 				id = resultSet.getInt(1);
 				return id;
 			}
-			
-			
-			
+
 		} catch (Exception e) {
-			
+
 			System.err.println(e.getMessage());
 		}
 		return id;
-		
-		
+
 	}
 
 }

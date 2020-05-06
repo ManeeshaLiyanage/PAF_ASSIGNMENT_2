@@ -69,6 +69,8 @@ public class Appointments {
 				+ ", status=" + status + "]";
 	}
 
+	
+
 	/*
 	 * public int getId() { return id; }
 	 * 
